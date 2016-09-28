@@ -8,7 +8,7 @@ var canvas = document.getElementById('screen');
 var game = new Game(canvas, update, render);
 var image = new Image();
 image.src = 'assets/animals.png';
-
+var card1;
 // We have 9 pairs of possible cards that are about 212px square
 var cards = [0,0,1,1,2,2,3,3,4,4,5,5,6,6,7,7,8,8];
 var board = [];
@@ -17,12 +17,41 @@ while(cards.length > 0) {
   board.push({card: cards[index], flip: true});
   cards.splice(index, 1);
 }
+var state = "waiting for click 1";
+var scores = [0,0];
+var player = 0;
 console.log(board);
 
 // TODO: Place the cards on the board in random order
 
 canvas.onclick = function(event) {
   event.preventDefault();
+  var x = Math.floor(event.clientX - 3 /165);
+  var y = Math.floor(event.clientY - 3 / 165);
+
+  var card = board[y * 6 + x];
+
+  if(!card || card.flip) return;
+  card.flip = true;
+  switch(state) 
+  {
+    case "waiting for click 1":
+      card1 = card;
+      state = "waiting for click 2";
+      break;
+    case "waiting for click 2":
+      if (card1.card == card.card)
+      {
+        scores[player]++;       
+      }
+      else {
+        card1.flip = false;
+        card.flip = false;
+        player = +!player;
+      }
+      state = "waiting for click 1";
+      break;
+  }
   // TODO: determine which card was clicked on
   // TODO: determine what to do
 }
